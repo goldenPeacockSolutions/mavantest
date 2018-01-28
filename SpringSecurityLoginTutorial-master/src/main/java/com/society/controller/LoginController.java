@@ -1,0 +1,79 @@
+package com.society.controller;
+
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.society.model.Society;
+import com.society.service.SocietyService;
+
+@Controller
+public class LoginController {
+	
+	@Autowired
+	private SocietyService societyService;
+
+	@RequestMapping(value={"/", "/login"}, method = RequestMethod.GET)
+	public ModelAndView login(){
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("login");
+		return modelAndView;
+	}
+	
+	
+	@RequestMapping(value="/registration", method = RequestMethod.GET)
+	public ModelAndView registration(){
+		ModelAndView modelAndView = new ModelAndView();
+		Society society = new Society();
+		modelAndView.addObject("societyyyy", society);
+		List<Society> societies = societyService.listAllSocieties();
+		modelAndView.addObject("societies", societies);
+		modelAndView.setViewName("registration");
+		return modelAndView;
+	}
+	
+	@RequestMapping(value = "/registration", method = RequestMethod.POST)
+	public ModelAndView createNewUser(@Valid Society society, BindingResult bindingResult) {
+		ModelAndView modelAndView = new ModelAndView();
+		Society societyExists =societyService.findSocietyByName(society.getName());
+		if (societyExists != null) {
+			bindingResult
+					.rejectValue("name", "error.society",
+							"There is already a society registered with the name provided");
+		}
+		if (bindingResult.hasErrors()) {
+			modelAndView.setViewName("registration");
+		} else {
+			societyService.saveSociety(society);
+			modelAndView.addObject("successMessage", "Society has been registered successfully");
+			modelAndView.addObject("society", new Society());
+			List<Society> societies = societyService.listAllSocieties();
+			modelAndView.addObject("societies", societies);
+			modelAndView.setViewName("registration");
+			
+		}
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/admin/home", method = RequestMethod.GET)
+	public ModelAndView home(){
+		ModelAndView modelAndView = new ModelAndView();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		//User user = userService.findUserByEmail(auth.getName());
+		//modelAndView.addObject("userName", "Welcome " + user.getName() + " " + user.getLastName() + " (" + user.getEmail() + ")");
+		modelAndView.addObject("adminMessage","Content Available Only for Users with Admin Role");
+		modelAndView.setViewName("admin/home");
+		return modelAndView;
+	}
+	
+
+}

@@ -34,7 +34,7 @@ public class LoginController {
 	public ModelAndView registration(){
 		ModelAndView modelAndView = new ModelAndView();
 		Society society = new Society();
-		modelAndView.addObject("societyyyy", society);
+		modelAndView.addObject("society", society);
 		List<Society> societies = societyService.listAllSocieties();
 		modelAndView.addObject("societies", societies);
 		modelAndView.setViewName("registration");

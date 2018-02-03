@@ -31,19 +31,30 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth)
-			throws Exception {
+			throws Exception {/*
 		auth.
 			jdbcAuthentication()
 				.usersByUsernameQuery(usersQuery)
 				.authoritiesByUsernameQuery(rolesQuery)
 				.dataSource(dataSource)
 				.passwordEncoder(bCryptPasswordEncoder);
+	*/
+		
+
+		auth.
+			jdbcAuthentication()
+				.usersByUsernameQuery(usersQuery)
+				//.authoritiesByUsernameQuery(rolesQuery)
+				.dataSource(dataSource);
+				//.passwordEncoder(bCryptPasswordEncoder);
+	
+		
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		
-		http.
+		/*http.
 			authorizeRequests()
 				.antMatchers("/").permitAll()
 				.antMatchers("/login").permitAll()
@@ -57,7 +68,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.and().logout()
 				.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 				.logoutSuccessUrl("/").and().exceptionHandling()
-				.accessDeniedPage("/access-denied");
+				.accessDeniedPage("/access-denied");*/
+		http.
+		authorizeRequests()
+			.antMatchers("/").permitAll()
+			.antMatchers("/ ").permitAll()
+			.antMatchers("/registration").permitAll()
+			.antMatchers("/admin/**").permitAll()
+			//.authenticated().and().csrf().disable().formLogin()
+			//.loginPage("/login").failureUrl("/login?error=true")
+			//.defaultSuccessUrl("/admin/home")
+			//.usernameParameter("email")
+			//.passwordParameter("password")
+			.and().logout()
+			.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+			.logoutSuccessUrl("/registration").and().exceptionHandling()
+			.accessDeniedPage("/access-denied");
 	}
 	
 	@Override

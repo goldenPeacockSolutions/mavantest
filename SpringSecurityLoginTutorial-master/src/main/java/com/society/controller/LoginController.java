@@ -16,6 +16,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.society.model.Society;
 import com.society.service.SocietyService;
+import com.society.model.BillHead;
+import com.society.service.BillHeadService;
 
 @Controller
 public class LoginController {
@@ -23,6 +25,8 @@ public class LoginController {
 	@Autowired
 	private SocietyService societyService;
 
+	@Autowired
+	private BillHeadService billHeadService;
 	/*@RequestMapping(value={"/", "/login"}, method = RequestMethod.GET)
 	public ModelAndView login(){
 		ModelAndView modelAndView = new ModelAndView();
@@ -79,5 +83,38 @@ public class LoginController {
 		return modelAndView;
 	}
 	
+	@RequestMapping(value="/addbillhead", method = RequestMethod.GET)
+	public ModelAndView addbillhead(){
+		ModelAndView modelAndView = new ModelAndView();
+		BillHead billHead = new BillHead();
+		modelAndView.addObject("billHead", billHead);
+		List<BillHead> billHeads = billHeadService.listAllBillHeads();
+		modelAndView.addObject("billHeads", billHeads);
+		modelAndView.setViewName("billHeadView");
+		return modelAndView;
+	}
+	
+	@RequestMapping(value = "/addbillhead", method = RequestMethod.POST)
+	public ModelAndView viewbillhead(@Valid BillHead billHead, BindingResult bindingResult) {
+		ModelAndView modelAndView = new ModelAndView();
+		BillHead billHeadExists =billHeadService.findBillHead(billHead.getName());
+		if (billHeadExists != null) {
+			bindingResult
+					.rejectValue("name", "error.billHead",
+							"There is already a bill head registered with the name provided");
+		}
+		if (bindingResult.hasErrors()) {
+			modelAndView.setViewName("billHeadView");
+		} else {
+			billHeadService.saveBillHead(billHead);
+			modelAndView.addObject("successMessage", "BillHead has been registered successfully");
+			modelAndView.addObject("billHead", new BillHead());
+			List<BillHead> billHeads = billHeadService.listAllBillHeads();
+			modelAndView.addObject("billHeads", billHeads);
+			modelAndView.setViewName("billHeadView");
+			
+		}
+		return modelAndView;
+	}
 
 }

@@ -77,9 +77,9 @@
       
       <tr th:each="soc,iterationStatus  : ${societies}">
       	<!-- <td th:text="${iterationStatus.count}">1</td> -->
-      	
-        <td class = "col-sm-3" th:text="${soc.name}">001</td>
-        
+        <!-- <td class = "col-sm-3" th:text="${soc.name}"></td> -->
+        <!-- <td><a th:href="'/admin/home/' + ${soc.name}"><label th:text="${soc.name}"></label></a></td> -->
+        <td><a th:href="@{/admin/home(name=${soc.name})}"><label th:text="${soc.name}"></label></a></td>
       </tr>
     </table>
     </div>
